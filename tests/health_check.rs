@@ -53,12 +53,21 @@ async fn select_player_game_returns_a_400_when_data_is_missing() {
     let client = reqwest::Client::new();
     let test_cases = vec![
         ("", "missing email and game_id and player_id"),
-        ("email=ursula_le_guin%40gmail.com", "missing game_id and player_id"),
+        (
+            "email=ursula_le_guin%40gmail.com",
+            "missing game_id and player_id",
+        ),
         ("game_id=1", "missing email and player_id"),
         ("player_id=1", "missing email and game_id"),
-        ("email=ursula_le_guin%40gmail.com&game_id=1", "missing player_id"),
-        ("email=ursula_le_guin%40gmail.com&player_id=1", "missing game_id"),
-        ("game_id=1&player_id=1", "missing email")
+        (
+            "email=ursula_le_guin%40gmail.com&game_id=1",
+            "missing player_id",
+        ),
+        (
+            "email=ursula_le_guin%40gmail.com&player_id=1",
+            "missing game_id",
+        ),
+        ("game_id=1&player_id=1", "missing email"),
     ];
 
     for (invalid_body, error_message) in test_cases {

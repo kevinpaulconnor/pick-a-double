@@ -1,6 +1,6 @@
-use std::net::TcpListener;
-use pick_a_double::startup::run;
 use pick_a_double::configuration::get_configuration;
+use pick_a_double::startup::run;
+use std::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
