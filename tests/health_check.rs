@@ -1,4 +1,8 @@
+use log::debug;
+use pick_a_double::configuration::get_configuration;
 use pick_a_double::startup::run;
+use sqlx::{Connection, PgConnection};
+use uuid::Uuid;
 
 #[tokio::test]
 async fn health_check_works() {
@@ -30,8 +34,17 @@ fn spawn_app() -> String {
 async fn select_player_game_returns_a_200_for_valid_form_data() {
     // Arrange
     let app_address = spawn_app();
+    let configuration = get_configuration().expect("Failed to read configuration.");
+    let connection_string = configuration.database.connection_string();
+    let mut connection = PgConnection::connect(&connection_string)
+        .await
+        .expect("Failed to connect to Postgres.");
+
     let client = reqwest::Client::new();
-    let body = "email=ursula_le_guin%40gmail.com&game_id=1&player_id=1";
+    let user_id = Uuid::new_v4();
+    let game_id = Uuid::new_v4();
+    let player_id = Uuid::new_v4();
+    let body = "user_id=1&game_id=2&player_id=3";
 
     // Act
     let response = client
@@ -44,6 +57,15 @@ async fn select_player_game_returns_a_200_for_valid_form_data() {
 
     // Assert
     assert_eq!(200, response.status().as_u16());
+    debug!("connection string: {}", connection_string);
+    let saved = sqlx::query!("SELECT user_id, game_id, player_id FROM picks")
+        .fetch_one(&mut connection)
+        .await
+        .expect("Failed to fetch saved player_game.");
+
+    assert!(saved.user_id == user_id);
+    assert!(saved.game_id == game_id);
+    assert!(saved.player_id == player_id);
 }
 
 #[tokio::test]
