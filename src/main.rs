@@ -1,11 +1,13 @@
 use pick_a_double::configuration::get_configuration;
 use pick_a_double::startup::run;
+use pick_a_double::telemetry::{get_subscriber, init_subscriber};
 use sqlx::PgPool;
 use std::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    // Panic if we can't read config
+    let subscriber = get_subscriber("pick-a-double".into(), "info".into());
+    init_subscriber(subscriber);
     let configuration = get_configuration().expect("Failed to read configuration.");
     let connection_pool = PgPool::connect(&configuration.database.connection_string())
         .await
