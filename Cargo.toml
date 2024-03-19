@@ -44,3 +44,6 @@ features = [
     "fast-rng",          # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
 ]
+
+[dev-dependencies]
+once_cell = "1.19.0"
