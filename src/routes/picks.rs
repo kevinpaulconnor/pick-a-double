@@ -36,7 +36,6 @@ pub async fn insert_pick(form: &FormData, pool: &PgPool) -> Result<(), sqlx::Err
     name = "Adding a new pick",
     skip(_form, _pool),
     fields(
-        request_id = %Uuid::new_v4(),
         player_id = %_form.player_id,
         user_id = %_form.user_id,
         game_id = %_form.game_id
