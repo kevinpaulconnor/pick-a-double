@@ -59,8 +59,7 @@ pub struct DatabaseSettings {
 impl DatabaseSettings {
     pub fn with_db(&self) -> PgConnectOptions {
         let options = self.without_db().database(&self.database_name);
-        let decorated_options = options.log_statements(tracing_log::log::LevelFilter::Trace);
-        decorated_options
+        options.log_statements(tracing_log::log::LevelFilter::Trace)
     }
 
     pub fn without_db(&self) -> PgConnectOptions {
@@ -71,7 +70,7 @@ impl DatabaseSettings {
         };
         PgConnectOptions::new()
             .username(&self.username)
-            .password(&self.password.expose_secret())
+            .password(self.password.expose_secret())
             .host(&self.host)
             .port(self.port)
             .ssl_mode(ssl_mode)
