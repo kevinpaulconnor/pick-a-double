@@ -16,19 +16,19 @@ services:
     routes:
       - path: /
     envs:
-      - key: APP_DATABSE__USERNAME
+      - key: APP_DATABASE__USERNAME
         scope: RUN_TIME
-        value: ${pick-a-double-db.username}
-      - key: APP_DATABSE__PASSWORD
+        value: ${pick-a-double-db.USERNAME}
+      - key: APP_DATABASE__PASSWORD
         scope: RUN_TIME
-        value: ${pick-a-double-db.password}
-      - key: APP_DATABSE__HOST
+        value: ${pick-a-double-db.PASSWORD}
+      - key: APP_DATABASE__HOST
         scope: RUN_TIME
-        value: ${pick-a-double-db.host}
-      - key: APP_DATABSE__PORT
+        value: ${pick-a-double-db.HOSTNAME}
+      - key: APP_DATABASE__PORT
         scope: RUN_TIME
-        value: ${pick-a-double-db.port}
-      - key: APP_DATABSE__DATABASE_NAME 
+        value: ${pick-a-double-db.PORT}
+      - key: APP_DATABASE__DATABASE_NAME 
         scope: RUN_TIME
         value: ${pick-a-double-db.DATABASE}
 databases:
