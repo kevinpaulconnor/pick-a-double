@@ -2,7 +2,6 @@ use once_cell::sync::Lazy;
 use pick_a_double::configuration::{get_configuration, DatabaseSettings};
 use pick_a_double::startup::run;
 use pick_a_double::telemetry::{get_subscriber, init_subscriber};
-use secrecy::ExposeSecret;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 

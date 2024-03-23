@@ -15,6 +15,22 @@ services:
     instance_size_slug: basic-xxs
     routes:
       - path: /
+    envs:
+      - key: APP_DATABSE__USERNAME
+        scope: RUN_TIME
+        value: ${pick-a-double-db.username}
+      - key: APP_DATABSE__PASSWORD
+        scope: RUN_TIME
+        value: ${pick-a-double-db.password}
+      - key: APP_DATABSE__HOST
+        scope: RUN_TIME
+        value: ${pick-a-double-db.host}
+      - key: APP_DATABSE__PORT
+        scope: RUN_TIME
+        value: ${pick-a-double-db.port}
+      - key: APP_DATABSE__DATABASE_NAME 
+        scope: RUN_TIME
+        value: ${pick-a-double-db.DATABASE}
 databases:
   - engine: PG
     name: pick-a-double-db
