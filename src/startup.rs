@@ -1,4 +1,4 @@
-use crate::routes::{health_check, select_player_game};
+use crate::routes::{create_user, health_check, select_player_game};
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
 use sqlx::PgPool;
@@ -12,6 +12,7 @@ pub fn run(listener: TcpListener, db_pool: PgPool) -> Result<Server, std::io::Er
             .wrap(TracingLogger::default())
             .route("/health_check", web::get().to(health_check))
             .route("/select_player_game", web::post().to(select_player_game))
+            .route("/create_user", web::post().to(create_user))
             .app_data(db_pool.clone())
     })
     .listen(listener)?
