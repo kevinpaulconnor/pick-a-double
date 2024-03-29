@@ -21,7 +21,7 @@ async fn create_user_returns_a_200_for_valid_form_data() {
 }
 
 #[tokio::test]
-async fn insert_user_returns_a_400_when_data_is_missing() {
+async fn create_user_returns_a_400_when_data_is_missing() {
     // Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
@@ -60,6 +60,49 @@ async fn insert_user_returns_a_400_when_data_is_missing() {
             response.status().as_u16(),
             "The API did not return a 400 Bad Request when the payload was {}.",
             error_message
+        );
+    }
+}
+
+#[tokio::test]
+async fn create_user_returns_a_400_when_fields_are_present_but_empty() {
+    // Arrange
+    let app = spawn_app().await;
+    let client = reqwest::Client::new();
+    let test_cases = vec![
+        (
+            "email=&first_name=&last_name=",
+            "empty email, first_name, and last_name",
+        ),
+        (
+            "email=ursula_le_guin%40gmail.com&first_name=&last_name=",
+            "empty first_name and last_name",
+        ),
+        (
+            "email=&first_name=Ursula&last_name=",
+            "empty email and last_name",
+        ),
+        (
+            "email=&first_name=&last_name=Le_Guin",
+            "empty email and first_name",
+        ),
+    ];
+    for (body, description) in test_cases {
+        // Act
+        let response = client
+            .post(&format!("{}/create_user", &app.address))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body)
+            .send()
+            .await
+            .expect("Failed to execute request.");
+
+        // Assert
+        assert_eq!(
+            400,
+            response.status().as_u16(),
+            "The API did not return a 400 Bad Request when the payload was {}.",
+            description
         );
     }
 }
