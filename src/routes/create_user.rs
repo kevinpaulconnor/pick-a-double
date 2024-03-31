@@ -1,4 +1,4 @@
-use crate::domain::{NewUser, UserName};
+use crate::domain::{NewUser, UserEmail, UserName};
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
 use sqlx::PgPool;
@@ -19,7 +19,7 @@ pub async fn insert_user(user: &NewUser, pool: &PgPool) -> Result<(), sqlx::Erro
         VALUES ($1, $2, $3, $4, $5)
         "#,
         Uuid::new_v4(),
-        &user.email,
+        &user.email.as_ref(),
         &user.name.first.as_ref(),
         &user.name.last.as_ref(),
         Utc::now()
@@ -43,10 +43,17 @@ pub async fn insert_user(user: &NewUser, pool: &PgPool) -> Result<(), sqlx::Erro
     )
 )]
 pub async fn create_user(_form: web::Form<UserFormData>, _pool: web::Data<PgPool>) -> HttpResponse {
-    let _user = NewUser {
-        email: _form.0.email,
-        name: UserName::parse(_form.0.first_name, _form.0.last_name),
+    let name = match UserName::parse(_form.0.first_name, _form.0.last_name) {
+        Ok(name) => name,
+        Err(_) => return HttpResponse::BadRequest().finish(),
     };
+
+    let email = match UserEmail::parse(_form.0.email) {
+        Ok(email) => email,
+        Err(_) => return HttpResponse::BadRequest().finish(),
+    };
+
+    let _user = NewUser { email, name };
     match insert_user(&_user, &_pool).await {
         Ok(_) => HttpResponse::Ok().finish(),
         Err(_) => HttpResponse::InternalServerError().finish(),

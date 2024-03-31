@@ -65,7 +65,7 @@ async fn create_user_returns_a_400_when_data_is_missing() {
 }
 
 #[tokio::test]
-async fn create_user_returns_a_400_when_fields_are_present_but_empty() {
+async fn create_user_returns_a_400_when_fields_are_present_but_invalid() {
     // Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
@@ -86,6 +86,7 @@ async fn create_user_returns_a_400_when_fields_are_present_but_empty() {
             "email=&first_name=&last_name=Le_Guin",
             "empty email and first_name",
         ),
+        ("email=&first_name=Ursula=&last_name=Le_Guin", "empty email"),
     ];
     for (body, description) in test_cases {
         // Act
