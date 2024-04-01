@@ -33,6 +33,18 @@ pub async fn insert_user(user: &NewUser, pool: &PgPool) -> Result<(), sqlx::Erro
     Ok(())
 }
 
+impl TryFrom<UserFormData> for NewUser {
+    type Error = String;
+
+    fn try_from(form: UserFormData) -> Result<Self, Self::Error> {
+        let name = UserName::parse(form.first_name, form.last_name)?;
+
+        let email = UserEmail::parse(form.email)?;
+
+        Ok(NewUser { email, name })
+    }
+}
+
 #[tracing::instrument(
     name = "Adding a new user",
     skip(_form, _pool),
@@ -43,18 +55,13 @@ pub async fn insert_user(user: &NewUser, pool: &PgPool) -> Result<(), sqlx::Erro
     )
 )]
 pub async fn create_user(_form: web::Form<UserFormData>, _pool: web::Data<PgPool>) -> HttpResponse {
-    let name = match UserName::parse(_form.0.first_name, _form.0.last_name) {
-        Ok(name) => name,
-        Err(_) => return HttpResponse::BadRequest().finish(),
+    let new_user = match _form.0.try_into() {
+        Ok(user) => user,
+        Err(_) => {
+            return HttpResponse::BadRequest().finish();
+        }
     };
-
-    let email = match UserEmail::parse(_form.0.email) {
-        Ok(email) => email,
-        Err(_) => return HttpResponse::BadRequest().finish(),
-    };
-
-    let _user = NewUser { email, name };
-    match insert_user(&_user, &_pool).await {
+    match insert_user(&new_user, &_pool).await {
         Ok(_) => HttpResponse::Ok().finish(),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
