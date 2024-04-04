@@ -22,6 +22,24 @@ pub struct TestApp {
     pub db_pool: PgPool,
 }
 
+impl TestApp {
+    async fn post_endpoint(&self, body: &str, endpoint: &str) -> reqwest::Response {
+        reqwest::Client::new()
+            .post(&format!("{}/{}", &self.address, endpoint))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body.to_string())
+            .send()
+            .await
+            .expect("Failed to execute request.")
+    }
+    pub async fn post_picks(&self, body: String) -> reqwest::Response {
+        self.post_endpoint(&body, "select_player_game").await
+    }
+    pub async fn post_users(&self, body: String) -> reqwest::Response {
+        self.post_endpoint(&body, "create_user").await
+    }
+}
+
 pub async fn spawn_app() -> TestApp {
     Lazy::force(&TRACING);
     let configuration = {

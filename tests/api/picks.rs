@@ -5,7 +5,6 @@ use uuid::Uuid;
 async fn select_player_game_returns_a_200_for_valid_form_data() {
     // Arrange
     let app = spawn_app().await;
-    let client = reqwest::Client::new();
     // this probably isn't the right way to do this
     let user_id = Uuid::new_v4();
     let game_id = Uuid::new_v4();
@@ -16,13 +15,7 @@ async fn select_player_game_returns_a_200_for_valid_form_data() {
     );
 
     // Act
-    let response = client
-        .post(&format!("{}/select_player_game", &app.address))
-        .header("Content-Type", "application/x-www-form-urlencoded")
-        .body(body)
-        .send()
-        .await
-        .expect("Failed to execute request.");
+    let response = app.post_picks(body.into()).await;
 
     // Assert
     assert_eq!(200, response.status().as_u16());
@@ -40,7 +33,6 @@ async fn select_player_game_returns_a_200_for_valid_form_data() {
 async fn select_player_game_returns_a_400_when_data_is_missing() {
     // Arrange
     let app = spawn_app().await;
-    let client = reqwest::Client::new();
     let test_cases = vec![
         ("", "missing player_id and game_id and user_id"),
         (
@@ -71,13 +63,7 @@ async fn select_player_game_returns_a_400_when_data_is_missing() {
 
     for (invalid_body, error_message) in test_cases {
         // Act
-        let response = client
-            .post(&format!("{}/select_player_game", &app.address))
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .body(invalid_body)
-            .send()
-            .await
-            .expect("Failed to execute request.");
+        let response = app.post_picks(invalid_body.into()).await;
 
         // Assert
         assert_eq!(
