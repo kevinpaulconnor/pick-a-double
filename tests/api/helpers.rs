@@ -32,11 +32,24 @@ impl TestApp {
             .await
             .expect("Failed to execute request.")
     }
+
+    async fn get_endpoint(&self, endpoint: &str) -> reqwest::Response {
+        reqwest::Client::new()
+            .get(&format!("{}/{}", &self.address, endpoint))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .send()
+            .await
+            .expect("Failed to execute request.")
+    }
     pub async fn post_picks(&self, body: String) -> reqwest::Response {
         self.post_endpoint(&body, "select_player_game").await
     }
     pub async fn post_users(&self, body: String) -> reqwest::Response {
         self.post_endpoint(&body, "create_user").await
+    }
+
+    pub async fn ingest_teams(&self) -> reqwest::Response {
+        self.get_endpoint("ingest_teams").await
     }
 }
 

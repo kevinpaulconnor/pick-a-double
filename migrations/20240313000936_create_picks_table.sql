@@ -1,4 +1,3 @@
--- Add migration script here
 -- Create Picks Table
 CREATE TABLE picks (
   id uuid NOT NULL,
